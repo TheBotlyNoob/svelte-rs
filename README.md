@@ -4,4 +4,4 @@ An alternative implementation of Svelte, written in Rust. This is a work in prog
 
 ## Why?
 
-Svelte is a great framework but the . This project aims to improve that.
+Svelte is a great framework but the developer experience when trying to use Rust as a backend isn't that good. This project aims to improve that.
