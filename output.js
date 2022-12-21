@@ -1,0 +1,1 @@
+React.createElement("span",null,React.createElement("script",null,"let root = [];"),React.createElement(Folder,{name:"Home",files:root,expanded:true}));

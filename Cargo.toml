@@ -1,0 +1,17 @@
+[package]
+name = "svelte-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.40"
+swc = "0.237.0"
+swc_common = "0.29.24"
+swc_node_bundler = "0.23.0"
+swc_bundler = "0.193.27"
+swc_ecma_loader = "0.41.25"
+swc_ecma_ast = "0.95.8"
+swc_ecma_codegen = "0.128.14"
+swc_ecma_parser = { version = "0.123.12", features = ["typescript"] }
