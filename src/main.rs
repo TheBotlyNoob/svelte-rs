@@ -21,7 +21,7 @@ fn _main() -> Result<()> {
     let options = Options {
         config: Config {
             #[cfg(not(debug_assertions))]
-            minify: MINIFY.into(),
+            minify: MINIFY.into(), // TODO(@TheBotlyNoob): turn this into a CLI flag
             jsc: JscConfig {
                 syntax: Some(Syntax::Typescript(TsConfig {
                     tsx: true,
@@ -52,8 +52,7 @@ fn _main() -> Result<()> {
             disable_hygiene: MINIFY,
             disable_fixer: MINIFY,
             disable_dce: false,
-            external_modules: Default::default(),
-            module: Default::default(),
+            ..Default::default()
         },
         Box::new(Noop),
     );

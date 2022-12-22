@@ -2,8 +2,6 @@
     <script>
         let root = {
             a: "b"
-        };
+        }; // this is what breaks. it thinks the braces are supposed to be JSX.
     </script>
-
-    <Folder name="Home" files={root} expanded/>
 </span>
