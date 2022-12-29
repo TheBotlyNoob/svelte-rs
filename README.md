@@ -19,4 +19,3 @@ More importantly,
 
 -   _Very_ experimental
 -   The large ecosystem of Svelte and Vite plugins can't be used
--   (For now) no support for vanilla JS scripts
