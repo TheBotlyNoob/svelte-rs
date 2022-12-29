@@ -1,0 +1,14 @@
+Program = { SOI ~ Tag+ }
+Tag = { "<" ~ Ident ~ Attr* ~ ">" }
+Attr = { Ident ~ "=" ~ ("{" ~ JSVal ~ "}" | PUSH(Quote) ~ Str ~ POP) }
+JSVal = { ASCII }
+Str = { ASCII }
+
+
+Ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+Quote = _{ "\"" | "'" }
+
+
+WHITESPACE = _{ " " | "\t" }
+
+EOL = _{ EOI | NEWLINE | ";" }

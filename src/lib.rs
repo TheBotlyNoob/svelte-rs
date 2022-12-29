@@ -1,2 +1,3 @@
-mod ast;
-mod lex;
+extern crate swc_core as swc;
+
+pub mod parse;
