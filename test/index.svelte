@@ -1,9 +1,9 @@
 <script>
-    import Custom from "./a";
     let root = {
         a: "b"
     };
+    function test() {}
     console.log("Hi!");
 </script>
 
-<Custom attr="maybe" bool />
+<h1>hello!</h1>

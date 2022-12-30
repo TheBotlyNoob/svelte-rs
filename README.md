@@ -1,10 +1,16 @@
 # Svelte(-rs)
 
-An alternative implementation of the Svelte compiler, written in Rust. This is a work in progress, and is not yet ready for production use.
+An alternative implementation of the Svelte compiler, written in Rust. This is a work in progress and is not yet viable for any kind of use in a project.
 
 ## Why?
 
 Svelte is a great framework but the developer experience when trying to use Rust as a backend isn't that good. This project aims to improve that.
+
+## Features
+
+[ ] Compiles Svelte to client side JS
+[ ] Compiles Svelte to server-side JS
+[ ] Custom components
 
 ---
 
