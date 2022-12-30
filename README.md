@@ -8,9 +8,9 @@ Svelte is a great framework but the developer experience when trying to use Rust
 
 ## Features
 
-[ ] Compiles Svelte to client side JS
-[ ] Compiles Svelte to server-side JS
-[ ] Custom components
+- [ ] Compiles Svelte to client side JS
+- [ ] Compiles Svelte to server-side JS
+- [ ] Custom components
 
 ---
 
