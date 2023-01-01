@@ -6,14 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-html5ever = "0.26"
-markup5ever = "0.11"
-markup5ever_rcdom = "0.2"
-swc_core = { version = "0.51", features = [
-    "common",
-    "ecma_ast",
-    "ecma_parser",
-] }
+chumsky = "0.8"
+ariadne = "0.1"
 itertools = "0.10"
 
 [profile.release]
