@@ -8,15 +8,14 @@ use std::{collections::HashMap, ops::Range};
 use ariadne::{sources, Color, Fmt, Label, Report, ReportKind};
 use chumsky::prelude::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 enum Expr {
     JS(String), // TODO: parse JS
     Text(String),
-    Element {
+    Elem {
         name: String,
         attrs: HashMap<String, Expr>,
         children: Vec<Expr>,
-        self_closing: bool,
     },
 }
 
@@ -27,7 +26,7 @@ fn main() {
     let file = &*Box::leak(file.into_boxed_str());
     let src = std::fs::read_to_string(file).unwrap();
 
-    let (e, mut errs) = elem().parse_recovery(&*src);
+    let (e, errs) = elem().parse_recovery(&*src);
 
     for e in errs
         .into_iter()
@@ -113,36 +112,113 @@ fn main() {
 }
 
 fn elem() -> impl Parser<char, Expr, Error = Simple<char>> {
-    just('<')
-        .ignore_then(text::ident())
+    just('/')
+        .or_not()
+        .then(text::ident().padded())
         .then(
-            text::whitespace()
-                .ignore_then(attr())
-                .repeated(),
+            attr()
+                .padded()
+                .repeated()
+                .collect(),
         )
-        .map(|(name, attrs)| Expr::Element {
+        .then(just('/').or_not())
+        .map(|(((closing, name), attrs), self_closing)| Expr::Elem {
             name,
-            attrs: attrs.into_iter().collect(),
-            children: vec![],
-            self_closing: false,
+            attrs,
+            children: if closing
+                .zip(self_closing)
+                .is_none()
+            {
+                // we're not a closing tag
+                vec![]
+            } else {
+                vec![]
+            },
         })
-        .then_ignore(just('>'))
+        .delimited_by(just('<'), just('>'))
 }
 
 fn attr() -> impl Parser<char, (String, Expr), Error = Simple<char>> {
+    fn p(s: char, e: char, f: fn(String) -> Expr) -> impl Parser<char, Expr, Error = Simple<char>> {
+        just(s)
+            .ignore_then(take_until(just(e)))
+            .map(move |(s, _)| f(s.into_iter().collect()))
+    }
     text::ident()
         .then_ignore(just('=').padded())
-        .then(
-            just('{')
-                .ignore_then(
-                    take_until(just('}'))
-                        .map(|(s, _)| s)
-                        .collect(),
-                )
-                .map(Expr::JS)
-                .or(just('"')
-                    .ignore_then(take_until(just('"')))
-                    .or(just('\'').ignore_then(take_until(just('\''))))
-                    .map(|(s, _)| Expr::Text(s.into_iter().collect()))),
-        )
+        .then(choice((
+            p('{', '}', Expr::JS),
+            p('"', '"', Expr::Text),
+            p('\'', '\'', Expr::Text),
+        ))) // TODO: use .delimited_by()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    macro_rules! wrapper {
+        ($n:ident, $out:ty) => {
+            use super::*;
+            fn $n(s: impl AsRef<str>) -> Result<$out, Vec<Simple<char>>> {
+                super::$n().parse(s.as_ref())
+            }
+        };
+    }
+
+    mod attr {
+        use chumsky::error::SimpleReason;
+
+        wrapper!(attr, (String, Expr));
+
+        #[test]
+        fn text() {
+            let ex = Ok(("a".into(), Expr::Text("b".into())));
+            assert_eq!(attr("a=\"b\""), ex);
+            assert_eq!(attr("a='b'"), ex);
+        }
+
+        #[test]
+        fn js() {
+            assert_eq!(attr("a={b()}"), Ok(("a".into(), Expr::JS("b()".into()))));
+        }
+
+        #[test]
+        fn without_quotes() {
+            let a = attr("a=b").expect_err("no quotes or braces");
+            let a = a.get(0).expect("one error");
+
+            assert_eq!(*a.reason(), SimpleReason::Unexpected);
+            assert_eq!(a.span(), 2..3);
+        }
+    }
+
+    mod elem {
+        wrapper!(elem, Expr);
+
+        #[test]
+        fn self_closing() {
+            assert_eq!(
+                elem("<e />"),
+                Ok(Expr::Elem {
+                    name: "e".into(),
+                    attrs: HashMap::new(),
+                    children: vec![],
+                })
+            );
+        }
+
+        #[test]
+        #[ignore = "not yet implemented"]
+        fn children() {
+            assert_eq!(
+                elem("<e>text</e>"),
+                Ok(Expr::Elem {
+                    name: "e".into(),
+                    attrs: HashMap::new(),
+                    children: vec![Expr::Text("text".into())]
+                })
+            )
+        }
+    }
 }
