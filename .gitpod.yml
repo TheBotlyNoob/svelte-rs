@@ -1,2 +1,3 @@
 tasks:
   - init: cargo build
+    command: cargo test
